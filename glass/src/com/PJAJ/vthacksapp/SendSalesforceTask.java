@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import org.json.JSONArray;
+import com.loopj.android.http.*;
 import org.json.JSONObject;
 
 /**
@@ -13,9 +14,18 @@ import org.json.JSONObject;
 public class SendSalesforceTask extends AsyncTask<String,Void,String> {
     private AsyncCallback mListener;
     private static TextReadQueue queue;
+    private AsyncHttpClient client;
 
     public SendSalesforceTask(Context context) {
         queue = TextReadQueue.get_instance(context);
+        if (client==null) {
+            client.get("salesforce.com", new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(String response) {
+                    System.out.println(response);
+                }
+            });
+        }
     }
 
     @Override

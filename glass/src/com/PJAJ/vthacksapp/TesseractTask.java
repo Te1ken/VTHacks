@@ -12,7 +12,6 @@ import java.security.PublicKey;
 public class TesseractTask extends AsyncTask<byte[],Void,String> {
     AsyncCallback mListener;
 
-
     @Override
     protected String doInBackground(byte[]... params) {
         //call tesseract

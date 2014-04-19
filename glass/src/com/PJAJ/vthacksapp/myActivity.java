@@ -12,6 +12,7 @@ import android.util.Patterns;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.loopj.android.http.AsyncHttpClient;
 import com.mirasense.scanditsdk.ScanditSDKAutoAdjustingBarcodePicker;
 import com.mirasense.scanditsdk.interfaces.ScanditSDK;
 import com.mirasense.scanditsdk.interfaces.ScanditSDKCaptureListener;

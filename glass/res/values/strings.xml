@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
     <string name="app_name">vthacksapp</string>
+    <string name="ScannerActivity_voice_trigger">Write this down</string>
     <string name="ScaneditAppKey">StN6dL6LEeOPa5RnNubY4hgfhJcNnrWP2yDvb+Q4ROo</string>
     <string name="queueFile">"queue.bin"</string>
 </resources>
