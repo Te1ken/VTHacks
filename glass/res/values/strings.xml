@@ -2,5 +2,5 @@
 <resources>
     <string name="app_name">vthacksapp</string>
     <string name="ScaneditAppKey">StN6dL6LEeOPa5RnNubY4hgfhJcNnrWP2yDvb+Q4ROo</string>
-
+    <string name="queueFile">"queue.bin"</string>
 </resources>

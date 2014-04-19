@@ -1,7 +1,11 @@
 package com.PJAJ.vthacksapp;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
@@ -26,13 +30,16 @@ import java.util.regex.Matcher;
  */
 public class myActivity extends Activity implements ScanditSDKListener {
    TextReadQueue queue;
+    Context context = this;
     private Resources res;
     private ScanditSDK mPicker;
+    private myBroadCastReceiver receiver;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        queue = new TextReadQueue();
+        queue = TextReadQueue.get_instance(this);
         res = getResources();
+        receiver = new myBroadCastReceiver(this);
         initializeBarcodeScanner();
 
     }
@@ -90,15 +97,23 @@ public class myActivity extends Activity implements ScanditSDKListener {
             public void callback(String result) {
                 try {
                     isMatch(result);
-                    SendSalesforceTask task = new SendSalesforceTask();
-                    task.setCallback(createSalesForceCallback());
-                    task.doInBackground();
+                    if(isOnline()) {
+                        SendSalesforceTask task = new SendSalesforceTask(context);
+                        task.setCallback(createSalesForceCallback());
+                        task.doInBackground();
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         };
         return callback;
+    }
+
+    private boolean isOnline() {
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
     }
 
     private void isMatch(String test) throws JSONException {
@@ -141,6 +156,8 @@ public class myActivity extends Activity implements ScanditSDKListener {
     @Override
     public void didCancel() {
         mPicker.stopScanning();
+        SharedPreferences mPrefs = getApplication().getSharedPreferences(getApplicationInfo().name,Context.MODE_PRIVATE);
+        queue.saveQueue();
         finish();
     }
 

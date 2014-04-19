@@ -6,6 +6,8 @@
     <uses-sdk android:minSdkVersion="19"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-feature android:name="android.hardware.camera"
     android:required="true" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -15,6 +17,10 @@
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        <intent-filter>
+            <action android:name="android.net.wifi.supplicant.CONNECTION_CHANGE" />
+            <action android:name="android.net.wifi.STATE_CHANGE" />
         </intent-filter>
     </activity>
     </application>

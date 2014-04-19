@@ -1,7 +1,9 @@
 package com.PJAJ.vthacksapp;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
+import java.security.PublicKey;
 
 
 /**
@@ -9,6 +11,7 @@ import android.os.AsyncTask;
  */
 public class TesseractTask extends AsyncTask<byte[],Void,String> {
     AsyncCallback mListener;
+
 
     @Override
     protected String doInBackground(byte[]... params) {
