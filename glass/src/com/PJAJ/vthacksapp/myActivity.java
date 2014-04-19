@@ -13,6 +13,7 @@ import com.mirasense.scanditsdk.interfaces.ScanditSDK;
 import com.mirasense.scanditsdk.interfaces.ScanditSDKCaptureListener;
 import com.mirasense.scanditsdk.interfaces.ScanditSDKListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,11 +25,13 @@ import java.util.regex.Matcher;
  * Created by Adam on 4/19/2014.
  */
 public class myActivity extends Activity implements ScanditSDKListener {
+   TextReadQueue queue;
     private Resources res;
     private ScanditSDK mPicker;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        queue = new TextReadQueue();
         res = getResources();
         initializeBarcodeScanner();
 
@@ -86,14 +89,10 @@ public class myActivity extends Activity implements ScanditSDKListener {
             @Override
             public void callback(String result) {
                 try {
-                    JSONObject foundText = isMatch(result);
+                    isMatch(result);
                     SendSalesforceTask task = new SendSalesforceTask();
                     task.setCallback(createSalesForceCallback());
-                    task.doInBackground(foundText);
-
-                    if (foundText.length()>0) {
-
-                    }
+                    task.doInBackground();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -102,39 +101,32 @@ public class myActivity extends Activity implements ScanditSDKListener {
         return callback;
     }
 
-    private JSONObject isMatch(String test) throws JSONException {
-        JSONObject foundText = new JSONObject();
-        List<String> urls = isURLMatch(test);
-        List<String> emails = isEmailMatch(test);
-        foundText = addtoJSON(urls, "url", foundText, 0);
-        foundText = addtoJSON(emails, "email", foundText, 0);
-        return foundText;
-    }
-
-    private JSONObject addtoJSON(List<String> list, String type, JSONObject foundText, int count) throws JSONException {
-        for(String item:list) {
-            foundText.put(type + Integer.toString(count),item);
-        }
-        return foundText;
-    }
-
-    private List<String> isEmailMatch(String test) throws JSONException {
-        List<String> emails = new ArrayList<String>();
+    private void isMatch(String test) throws JSONException {
         Matcher matcher = Patterns.EMAIL_ADDRESS.matcher(test);
+        JSONArray array = new JSONArray();
         while (matcher.find()) {
-            emails.add(matcher.group(1));
+            JSONObject object = new JSONObject();
+            object.put("type","url");
+            object.put("data",matcher.group(1));
+            array.put(object);
         }
-        return emails;
+        if (array.length()!=0) {
+            queue.enqueue(array);
+        }
+        matcher = Patterns.WEB_URL.matcher(test);
+        array = new JSONArray();
+        while (matcher.find()) {
+            JSONObject object = new JSONObject();
+            object.put("type","url");
+            object.put("data",matcher.group(1));
+            array.put(object);
+        }
+        if (array.length()!=0) {
+            queue.enqueue(array);
+        }
     }
 
-    private List<String> isURLMatch(String test) throws JSONException {
-        List<String> urls = new ArrayList<String>();
-        Matcher matcher = Patterns.WEB_URL.matcher(test);
-        while (matcher.find()) {
-            urls.add(matcher.group(1));
-        }
-        return  urls;
-    }
+
 
     private AsyncCallback createSalesForceCallback() {
         AsyncCallback callback = new AsyncCallback() {
